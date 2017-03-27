@@ -137,7 +137,6 @@ class SplineMode(bpy.types.Operator):
             print("right point: ", right_point.handle_left)
             f.keyframe_points.remove(ref_point)
             #f.update()
-        print(fcurves[0].keyframe_points[0].handle_right)
         return {'FINISHED'}
 
 class NewSplineMode(bpy.types.Operator):
