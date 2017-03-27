@@ -117,7 +117,7 @@ class UpdateEndFrame(bpy.types.Operator):
             print('Select an armature')
         return {'FINISHED'}
 
-class NewSplineMode(bpy.types.Operator):
+class SplineMode(bpy.types.Operator):
     bl_idname = "anim.splinemode"
     bl_label = "SplineMode"
     bl_options = {'REGISTER', 'UNDO'}
@@ -130,16 +130,17 @@ class NewSplineMode(bpy.types.Operator):
             ref_point = f.keyframe_points[1]
             left_point = f.keyframe_points[0]
             right_point = f.keyframe_points[2]
+            print("Ref coord: ", ref_point.co)
             left_point.handle_right = ref_point.co
+            print("left point: ", left_point.handle_right)
             right_point.handle_left = ref_point.co
-            f.update()
-        for f in fcurves:
+            print("right point: ", right_point.handle_left)
             f.keyframe_points.remove(ref_point)
-            #else:
-            #print("SplineMode requires key poses to work as intended")
+            #f.update()
+        print(fcurves[0].keyframe_points[0].handle_right)
         return {'FINISHED'}
 
-class SplineMode(bpy.types.Operator):
+class NewSplineMode(bpy.types.Operator):
     bl_idname = "anim.splinemode"
     bl_label = "SplineMode"
     bl_options = {'REGISTER', 'UNDO'}
