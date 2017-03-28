@@ -117,7 +117,7 @@ class UpdateEndFrame(bpy.types.Operator):
             print('Select an armature')
         return {'FINISHED'}
 
-class SplineMode(bpy.types.Operator):
+class NewSplineMode(bpy.types.Operator):
     bl_idname = "anim.splinemode"
     bl_label = "SplineMode"
     bl_options = {'REGISTER', 'UNDO'}
@@ -131,15 +131,17 @@ class SplineMode(bpy.types.Operator):
             left_point = f.keyframe_points[0]
             right_point = f.keyframe_points[2]
             print("Ref coord: ", ref_point.co)
+            left_point.handle_right_type = "FREE"
             left_point.handle_right = ref_point.co
             print("left point: ", left_point.handle_right)
+            right_point.handle_left_type = "FREE"
             right_point.handle_left = ref_point.co
             print("right point: ", right_point.handle_left)
             f.keyframe_points.remove(ref_point)
-            #f.update()
+            f.update()
         return {'FINISHED'}
 
-class NewSplineMode(bpy.types.Operator):
+class SplineMode(bpy.types.Operator):
     bl_idname = "anim.splinemode"
     bl_label = "SplineMode"
     bl_options = {'REGISTER', 'UNDO'}
@@ -157,29 +159,28 @@ class NewSplineMode(bpy.types.Operator):
                             left_point = f.keyframe_points[i-1]
                             has_left_point = True
                         else:
-                            del_single_point = f.keyframe_points
                             has_left_point = False
                         if ref_point != f.keyframe_points[len(f.keyframe_points)-1]:
                             right_point = f.keyframe_points[i+1]
                             has_right_point = True
                         else:
                             has_right_point = False
-            if has_left_point == True and has_right_point == True:
-                left_point.handle_right = ref_point.co
-                right_point.handle_left = ref_point.co
-            elif has_left_point == True and has_right_point == False:
-                left_point.handle_right = ref_point.co
-            elif has_left_point == False and has_right_point == True:
-                right_point.handle_left = ref_point.co
+                        if has_left_point == True and has_right_point == True:
+                            left_point.handle_right_type = "FREE"
+                            right_point.handle_left_type = "FREE"
+                            left_point.handle_right = ref_point.co
+                            right_point.handle_left = ref_point.co
+                        elif has_left_point == True and has_right_point == False:
+                            left_point.handle_right_type = "FREE"
+                            left_point.handle_right = ref_point.co
+                        elif has_left_point == False and has_right_point == True:
+                            right_point.handle_left_type = "FREE"
+                            right_point.handle_left = ref_point.co
+                        f.keyframe_points.remove(ref_point)
+            else:
+                f.keyframe_points.remove(f.keyframe_points[0])
             f.update()
-        for f in fcurves:
-            if len(f.keyframe_points) > 1:
-                for point in f.keyframe_points:
-                    if point.co.x == cur_frame:
-                        f.keyframe_points.remove(point)
-            f.update()
-            #else:
-            #print("SplineMode requires key poses to work as intended")
+        bpy.ops.pose.paths_calculate(start_frame=0, end_frame=bpy.context.scene.frame_end+1, bake_location='HEADS')
         return {'FINISHED'}
             
 
