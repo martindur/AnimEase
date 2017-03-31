@@ -1,4 +1,5 @@
 import bpy
+from bpy.props import *
 import math
 
 bl_info = {
@@ -6,6 +7,16 @@ bl_info = {
     "category" : "Animation",
 }
 
+def initSceneProperties(scn):
+    bpy.types.Scene.anim_mode = EnumProperty(
+        items = [('keyframe_mode', 'Keyframe', ''), ('spline_mode', 'Spline', '')])
+    scn['anim_mode'] = 'keyframe_mode'
+
+initSceneProperties(bpy.context.scene)
+
+#
+#   UI panels in Tools bl_region_type
+#
 class ToolsPanel(bpy.types.Panel):
     bl_label = "Dur's AnimEase"
     bl_space_type = "VIEW_3D"
@@ -15,7 +26,7 @@ class ToolsPanel(bpy.types.Panel):
     def draw(self, context):
         #self.layout.operator("spline.toggle", icon="OBJECT_DATAMODE")
         layout = self.layout
-
+        scn = context.scene
         col = layout.column(align=True)
 
         col.label(text="Toggle Spline/Constant:")
@@ -29,6 +40,7 @@ class ToolsPanel(bpy.types.Panel):
         col.label("Animation Mode:")
         row = col.row(align=True)
         row.operator("anim.splinemode")
+        layout.prop(scn, 'anim_mode', expand=True)
     
     def execute(self, context):
         print("fixed item", self.spline_constant_toggle)
@@ -147,6 +159,8 @@ class SplineMode(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
+        anim_mode = context.scene.anim_mode
+        print(anim_mode)
         rig = context.object
         cur_frame = context.scene.frame_current
         fcurves = rig.animation_data.action.fcurves
