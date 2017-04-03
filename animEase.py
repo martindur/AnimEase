@@ -7,6 +7,7 @@ bl_info = {
     "category" : "Animation",
 }
 
+
 def initSceneProperties(scn):
     bpy.types.Scene.anim_mode = EnumProperty(
         items = [('keyframe_mode', 'Keyframe', ''), ('spline_mode', 'Spline', '')])
@@ -157,6 +158,19 @@ class SplineMode(bpy.types.Operator):
     bl_idname = "anim.splinemode"
     bl_label = "SplineMode"
     bl_options = {'REGISTER', 'UNDO'}
+
+    def modal(self, context, event):
+        anim_mode = context.scene.anim_mode
+        v3d = context.space_data
+        rv3d = v3d.region_3d
+
+        if anim_mode == 'spline_mode':
+            if event.type == 'LEFTMOUSE':
+                self.execute(context)
+                return {'FINISHED'}
+            elif event.type in {'RIGHTMOUSE', 'ESC'}:
+                return {'CANCELLED'}
+            return {'RUNNING_MODAL'}
 
     def execute(self, context):
         anim_mode = context.scene.anim_mode
