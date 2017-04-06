@@ -166,13 +166,18 @@ class SplineMode(bpy.types.Operator):
 
         if anim_mode == 'spline_mode':
             if event.type == 'LEFTMOUSE':
+                print("executing!")
                 self.execute(context)
                 return {'FINISHED'}
             elif event.type in {'RIGHTMOUSE', 'ESC'}:
                 return {'CANCELLED'}
             return {'RUNNING_MODAL'}
+        elif anim_mode == 'key_mode':
+            print("Passing through..")
+            return {'PASS_THROUGH'}
 
     def execute(self, context):
+        print("Executed!")
         anim_mode = context.scene.anim_mode
         print(anim_mode)
         rig = context.object
