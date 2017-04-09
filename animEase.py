@@ -159,22 +159,11 @@ class SplineMode(bpy.types.Operator):
     bl_label = "SplineMode"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def modal(self, context, event):
-        anim_mode = context.scene.anim_mode
-        v3d = context.space_data
-        rv3d = v3d.region_3d
-
-        if anim_mode == 'spline_mode':
-            if event.type == 'LEFTMOUSE':
-                print("executing!")
-                self.execute(context)
-                return {'FINISHED'}
-            elif event.type in {'RIGHTMOUSE', 'ESC'}:
-                return {'CANCELLED'}
-            return {'RUNNING_MODAL'}
-        elif anim_mode == 'key_mode':
-            print("Passing through..")
-            return {'PASS_THROUGH'}
+    def __init__(self):
+        print("Start")
+    
+    def __del__(self):
+        print("End")
 
     def execute(self, context):
         print("Executed!")
@@ -215,6 +204,45 @@ class SplineMode(bpy.types.Operator):
             f.update()
         bpy.ops.pose.paths_calculate(start_frame=0, end_frame=bpy.context.scene.frame_end+1, bake_location='HEADS')
         return {'FINISHED'}
+
+    def modal(self, context, event):
+        anim_mode = context.scene.anim_mode
+        v3d = context.space_data
+        rv3d = v3d.region_3d
+
+        if event.type == self.transform_key:
+            if bpy.ops.transform.translate.poll():
+                print("Translating..")
+                bpy.ops.transform.translate('INVOKE_DEFAULT')
+        elif event.type == 'LEFTMOUSE':
+            if anim_mode == 'spline_mode':
+                self.execute(context)
+                return {'FINISHED'}
+            else:
+                return {'FINISHED'}
+                
+        elif event.type == 'ESC' or event.type == 'RIGHTMOUSE':
+            print("Cancelled..")
+            return {'CANCELLED'}
+            
+        return {'RUNNING_MODAL'}
+    
+    def invoke(self, context, event):
+        kms = [bpy.context.window_manager.keyconfigs.active.keymaps['3D View'],\
+        bpy.context.window_manager.keyconfigs.active.keymaps['Object Mode']]
+        kmis = []
+
+        for km in kms:
+            for kmi in km.keymap_items:
+                if kmi.idname == "transform.translate" and \
+                kmi.map_type == 'KEYBOARD' and not \
+                kmi.properties.texture_space:
+                    kmis.append(kmi)
+                    self.transform_key = kmi.type
+        context.window_manager.modal_handler_add(self)
+        return {'RUNNING_MODAL'}
+
+
             
 
 def register():
