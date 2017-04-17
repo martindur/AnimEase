@@ -26,7 +26,7 @@ def initSceneProperties(scn):
         name = 'Solver')
     scn['solve_mode'] = 'auto_mode'
 
-#initSceneProperties(bpy.context.scene)
+initSceneProperties(bpy.context.scene)
 
 def get_animation_mode(context):
     anim_mode = context.scene.anim_mode
@@ -87,7 +87,6 @@ class ToolsPanel(bpy.types.Panel):
         row.operator("anim.endframe")
         col.label("Animation Pass:")
         row = col.row(align=True)
-        #row.operator("anim.splinemode")
         layout.prop(scn, 'anim_mode', expand=True)
         layout.prop(scn, 'solve_mode', icon="RNDCURVE")
     
