@@ -3,8 +3,14 @@ from bpy.props import *
 import math
 
 bl_info = {
-    "name" : "Dur's AnimEase",
-    "category" : "Animation",
+    "name": "Dur's AnimEase",
+    "author": "Dur",
+    "version": (0,1),
+    "blender": (2,78,0),
+    "location": "3d view",
+    "description": "A set of tools that enables the user to easily manipulate f-curves, by moving/rotating/scaling objects(bones) in the 3d view. Avoid keyframe hell..",
+    "warning": "For now, manually enable preferences > Editing > Keyframing: Only Insert Needed'",
+    "category": "Animation",
 }
 
 
@@ -299,21 +305,40 @@ class SplineMode(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
 
-            
+keymaps = []
 
 def register():
+    #class registration
     bpy.utils.register_class(ToggleSpline)
     bpy.utils.register_class(ToggleStepped)
     bpy.utils.register_class(UpdateEndFrame)
     bpy.utils.register_class(SplineMode)
     bpy.utils.register_class(ToolsPanel)
+    #Keymap registration
+    wm = bpy.context.window_manager
+    km = wm.keyconfigs.addon.keymaps.new(name='Pose', space_type='EMPTY')
+    kmi = km.keymap_items.new(SplineMode.bl_idname, 'G', 'PRESS')
+    keymaps.append(km)
+    km = wm.keyconfigs.addon.keymaps.new(name='Pose', space_type='EMPTY')
+    kmi = km.keymap_items.new(SplineMode.bl_idname, 'R', 'PRESS')
+    keymaps.append(km)
+    km = wm.keyconfigs.addon.keymaps.new(name='Pose', space_type='EMPTY')
+    kmi = km.keymap_items.new(SplineMode.bl_idname, 'S', 'PRESS')
+    keymaps.append(km)
 
 def unregister():
+    #class unregistration
     bpy.utils.unregister_class(ToggleSpline)
     bpy.utils.unregister_class(ToggleStepped)
     bpy.utils.unregister_class(UpdateEndFrame)
     bpy.utils.unregister_class(SplineMode)
     bpy.utils.unregister_class(ToolsPanel)
+    #Keymap unregistration
+    wm = bpy.context.window_manager
+    for km in keymaps:
+        wm.keyconfigs.addon.keymaps.remove(km)
+    #clear list
+    del keymaps[:]
 
 if __name__ == "__main__":
     register()
