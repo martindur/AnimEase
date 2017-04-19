@@ -334,6 +334,9 @@ def register():
     keymaps.append(km)
 
 def unregister():
+    #Remove scene properties
+    del bpy.types.Scene.anim_mode
+    del bpy.types.Scene.solve_mode
     #class unregistration
     bpy.utils.unregister_class(ToggleSpline)
     bpy.utils.unregister_class(ToggleStepped)
