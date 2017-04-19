@@ -4,7 +4,7 @@ import math
 
 bl_info = {
     "name": "Dur's AnimEase",
-    "author": "Dur",
+    "author": "Martin Durhuus",
     "version": (0,1),
     "blender": (2,78,0),
     "location": "3d view",
