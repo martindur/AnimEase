@@ -26,7 +26,7 @@ def initSceneProperties(scn):
         name = 'Solver')
     scn['solve_mode'] = 'auto_mode'
 
-initSceneProperties(bpy.context.scene)
+#initSceneProperties(bpy.context.scene)
 
 def get_animation_mode(context):
     anim_mode = context.scene.anim_mode
@@ -307,6 +307,14 @@ class SplineMode(bpy.types.Operator):
 keymaps = []
 
 def register():
+    #Initialize scene properties
+    bpy.types.Scene.anim_mode = EnumProperty(
+        items = [('block_mode', 'Block', ''),\
+                 ('spline_mode', 'Spline', '')])
+    bpy.types.Scene.solve_mode = EnumProperty(
+        items = [('free_mode', 'Free', ''),\
+                 ('auto_mode', 'Auto', '')],\
+        name = 'Solver')
     #class registration
     bpy.utils.register_class(ToggleSpline)
     bpy.utils.register_class(ToggleStepped)
