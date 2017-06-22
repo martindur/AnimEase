@@ -1,5 +1,5 @@
 import bpy
-from bpy.props import *
+from bpy.props import EnumProperty
 import math
 
 bl_info = {
@@ -13,21 +13,6 @@ bl_info = {
     "category": "Animation",
 }
 
-
-def initSceneProperties(scn):
-    bpy.types.Scene.anim_mode = EnumProperty(
-        items=[('block_mode', 'Block', ''),
-               ('spline_mode', 'Spline', '')])
-    scn['anim_mode'] = 'block_mode'
-
-    bpy.types.Scene.solve_mode = EnumProperty(
-        items=[('free_mode', 'Free', ''),
-               ('auto_mode', 'Auto', '')],
-        name='Solver')
-    scn['solve_mode'] = 'auto_mode'
-
-
-# initSceneProperties(bpy.context.scene)
 
 def get_animation_mode(context):
     anim_mode = context.scene.anim_mode
@@ -73,6 +58,15 @@ def set_handle_type(point_1, handle_type, point_2=None):
         return (point_1, point_2)
     return (point_1)
 
+def calc_bezier(p1, p2, p_ref):
+    p = []
+    #px = (p_ref.x * 2 - (p1.x + p2.x) / 2) * 0.75
+    py = (p_ref.y * 2 - (p1.y + p2.y) / 2) * 0.75
+    px = p_ref.x
+    p.append(px)
+    p.append(py)
+    return p
+
 
 #
 #   UI panels in Tools bl_region_type
@@ -113,6 +107,10 @@ class ToggleSpline(bpy.types.Operator):
     bl_label = "Spline"
     bl_options = {'REGISTER', 'UNDO'}
 
+    @classmethod
+    def poll(cls, context):
+        return context.object.mode == 'POSE'
+
     def execute(self, context):
         interpType = 'BEZIER'
         rig = context.object
@@ -136,6 +134,10 @@ class ToggleStepped(bpy.types.Operator):
     bl_idname = "stepped.toggle"
     bl_label = "Stepped"
     bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.object.mode == 'POSE'
 
     def execute(self, context):
         interpType = 'CONSTANT'
@@ -239,8 +241,9 @@ class SplineMode(bpy.types.Operator):
                         else:
                             has_right_point = False
                         if has_left_point and has_right_point:
-                            left_point.handle_right = ref_point.co
-                            right_point.handle_left = ref_point.co
+                            new_point = calc_bezier(left_point.co, right_point.co, ref_point.co)
+                            left_point.handle_right = new_point
+                            right_point.handle_left = new_point
                             if solve_mode == "auto_mode":
                                 # Calculate the opposing handle to keep a 'proper' bezier curve.
                                 left_point_vector = get_handle_vector(left_point, False)
