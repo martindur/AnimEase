@@ -205,8 +205,14 @@ class UpdateEndFrame(bpy.types.Operator):
             print('Select an armature')
         return {'FINISHED'}
 
-
 class SplineMode(bpy.types.Operator):
+    bl_idname = "anim.splinemode"
+    bl_label = "SplineMode"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    
+
+class SplineModeOld(bpy.types.Operator):
     bl_idname = "anim.splinemode"
     bl_label = "SplineMode"
     bl_options = {'REGISTER', 'UNDO'}
@@ -223,6 +229,7 @@ class SplineMode(bpy.types.Operator):
     def execute(self, context):
         solve_mode = get_solve_mode(context)
         rig = context.object
+        print(context.selected_pose_bones[0].location)
         cur_frame = context.scene.frame_current
         fcurves = rig.animation_data.action.fcurves
         for f in fcurves:
@@ -268,13 +275,19 @@ class SplineMode(bpy.types.Operator):
         anim_mode = get_animation_mode(context)
         cur_frame = context.scene.frame_current
         rig = context.object
-        fcurves = rig.animation_data.action.fcurves
+        try:
+            fcurves = rig.animation_data.action.fcurves
+        except:
+            pass
         if event.type == self.translate_key:
             if bpy.ops.transform.translate.poll():
-                for f in fcurves:
-                    for i in range(len(f.keyframe_points) - 1):
-                        self.keyframes.append(f.keyframe_points[i].co.x)
-                self.has_existing_key = any(key == cur_frame for key in self.keyframes)
+                try:
+                    for f in fcurves:
+                        for i in range(len(f.keyframe_points) - 1):
+                            self.keyframes.append(f.keyframe_points[i].co.x)
+                    self.has_existing_key = any(key == cur_frame for key in self.keyframes)
+                except:
+                    pass
                 print("Translating..")
                 bpy.ops.transform.translate('INVOKE_DEFAULT')
         elif event.type == self.rotate_key:
