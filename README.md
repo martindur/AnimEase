@@ -1,4 +1,4 @@
-# AnimEase Lite
+# AnimEase
 
 A collection of tools to help ease your animation workflow.
 Overview: https://youtu.be/SzY8YFkuhWo

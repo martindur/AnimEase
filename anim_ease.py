@@ -3,13 +3,13 @@ from bpy.props import EnumProperty
 import math
 
 bl_info = {
-    "name": "Dur's AnimEase Lite",
+    "name": "Arura AnimEase",
     "author": "Martin Durhuus",
     "version": (0, 1),
     "blender": (2, 78, 0),
     "location": "3d view",
-    "description": "A lite version of AnimEase that includes tools to switch between spline/stepped mode and automagically creates an accurately solved end keyframe for looping.",
-    "category": "Animation",
+    "description": "A set of tools to make the animator's life more happy!",
+    "category": "Arura",
 }
 
 
@@ -23,10 +23,10 @@ bl_info = {
 #   UI panels in Tools bl_region_type
 #
 class ToolsPanel(bpy.types.Panel):
-    bl_label = "Dur's AnimEase Lite"
+    bl_label = "Arura AnimEase"
     bl_space_type = "VIEW_3D"
     bl_region_type = "TOOLS"
-    bl_category = "Animation"
+    bl_category = "Arura"
 
     def draw(self, context):
         # self.layout.operator("spline.toggle", icon="OBJECT_DATAMODE")
